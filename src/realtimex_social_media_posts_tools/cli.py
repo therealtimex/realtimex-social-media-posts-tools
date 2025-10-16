@@ -112,7 +112,13 @@ async def check_linkedin_logged_in() -> Dict:
     async with async_playwright() as p:
         browser = await p.chromium.connect_over_cdp("http://127.0.0.1:9222")
         context = browser.contexts[0] if browser.contexts else await browser.new_context()
-        page = await context.new_page()
+
+        # Get the first existing page
+        if context.pages:
+            page = context.pages[0]
+        else:
+            # Fallback: create a new one only if none exists
+            page = await context.new_page()
 
         await page.goto("https://www.linkedin.com/feed/", wait_until="domcontentloaded")
         await asyncio.sleep(2)
@@ -134,7 +140,13 @@ async def create_linkedin_post(post_content: str) -> Dict:
     async with async_playwright() as p:
         browser = await p.chromium.connect_over_cdp("http://127.0.0.1:9222")
         context = browser.contexts[0] if browser.contexts else await browser.new_context()
-        page = await context.new_page()
+        
+        # Get the first existing page
+        if context.pages:
+            page = context.pages[0]
+        else:
+            # Fallback: create a new one only if none exists
+            page = await context.new_page()
 
         await page.goto("https://www.linkedin.com/feed/", wait_until="domcontentloaded")
         await asyncio.sleep(2)
